@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBSE Grade Processing System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header with Logo */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            height: 80px;
+            width: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .cbse-notice {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Modern Card Design */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .upload-icon { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .filter-icon { background: linear-gradient(135deg, #2196F3, #1976D2); }
+        .multi-icon { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
+        .process-icon { background: linear-gradient(135deg, #FF9800, #F57C00); }
+        .history-icon { background: linear-gradient(135deg, #607D8B, #455A64); }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Drag and Drop Upload Area */
+        .upload-zone {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 50px 20px;
+            text-align: center;
+            background: #fafafa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone.dragover {
+            border-color: #4CAF50;
+            background: #f0fff0;
+            transform: scale(1.02);
+        }
+
+        .upload-zone:hover {
+            border-color: #4CAF50;
+            background: #f9f9f9;
+        }
+
+        .upload-icon-large {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone.dragover .upload-icon-large {
+            color: #4CAF50;
+            transform: scale(1.1);
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .upload-subtext {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Modern Buttons */
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            margin: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+        }
+
+        .btn-warning:hover {
+            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 10px 25px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #607D8B, #455A64);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 25px rgba(96, 125, 139, 0.4);
+        }
+
+        /* Modern Textarea */
+        .modern-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            background: #fafafa;
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+
+        .modern-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Results */
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+
+        .result.success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-left: 5px solid #28a745;
+            color: #155724;
+        }
+
+        .result.error {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border-left: 5px solid #dc3545;
+            color: #721c24;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Filter Blocks */
+        .block-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .block-item {
+            background: linear-gradient(135deg, #f8f9ff, #e8ecff);
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #9C27B0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .block-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.2);
+        }
+
+        .block-text {
+            flex-grow: 1;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .remove-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* Download Links */
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 5px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .download-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(23, 162, 184, 0.4);
+        }
+
+        /* History Items */
+        .history-item {
+            background: white;
+            padding: 25px;
+            margin: 15px 0;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .app-title { font-size: 2rem; }
+            .logo-container { flex-direction: column; gap: 15px; }
+            .card { padding: 20px; }
+            .upload-zone { padding: 30px 15px; }
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            .card {
+                background: rgba(30, 30, 30, 0.95);
+                color: #e0e0e0;
+            }
+            .modern-textarea {
+                background: #2a2a2a;
+                color: #e0e0e0;
+                border-color: #444;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Logo -->
+        <div class="header">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="CBSE Logo" class="logo">
+                <div>
+                    <h1 class="app-title">CBSE Grade Processing System</h1>
+                    <p class="app-subtitle">Advanced Student Result Analysis & Filtering Tool</p>
+                </div>
+            </div>
+            <div class="cbse-notice">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Important:</strong> This system only supports CBSE text files (.txt format)
+            </div>
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div>
+                    <h3 class="card-title">Upload CBSE Grade File</h3>
+                    <p style="color: #666; font-size: 0.9rem;">Drag & drop your CBSE text file or click to browse</p>
+                </div>
+            </div>
+            
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-icon-large">
+                    <i class="fas fa-file-upload"></i>
+                </div>
+                <div class="upload-text">
+                    <strong>Drop your CBSE text file here</strong>
+                </div>
+                <div class="upload-subtext">
+                    or click to browse • Only .txt files accepted • Max 16MB
+                </div>
+                <input type="file" id="fileInput" accept=".txt" class="file-input">
+            </div>
+            
+             <div style="margin-top: 15px;">
+        <button onclick="deleteUploadedFile()" class="btn btn-danger">
+            <i class="fas fa-trash"></i> Delete Uploaded File
+        </button>
+    </div>
+            
+            <div id="uploadResult" class="result"></div>
+        </div>
+        
+        <!-- Quick Dynamic Filter -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon filter-icon">
+                    <i class="fas fa-filter"></i>
+                </div>
+                <div>
+                    <h3 class="card-title">Quick Dynamic Filter</h3>
+                    <p style="color: #666; font-size: 0.9rem;">Instant single-sheet filtering with real-time results</p>
+                </div>
+            </div>
+            
+            <textarea id="dynamicRolls" class="modern-textarea" placeholder="Enter roll numbers (one per line or comma-separated):
+
+Examples:
+26165152, 26165153, 26165154
+26165160
+26165170
+26165180"></textarea>
+            
+            <div style="margin-top: 20px;">
+                <button onclick="filterDynamic()" class="btn btn-success" id="filterBtn">
+                    <i class="fas fa-search"></i> Filter & Download
+                </button>
+                <button onclick="clearDynamicFilter()" class="btn btn-secondary">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+            </div>
+            
+            <div class="loading" id="filterLoading">
+                <div class="spinner"></div>
+                Filtering students...
+            </div>
+            <div id="filterResult" class="result"></div>
+        </div>
+        
+        <!-- Multi-Filter Section -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon multi-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div>
+                    <h3 class="card-title">Multiple Filter Sets</h3>
+                    <p style="color: #666; font-size: 0.9rem;">Create multiple filtered sheets in one Excel file</p>
+                </div>
+            </div>
+            
+            <textarea id="rollBlock" class="modern-textarea" placeholder="Enter roll numbers for this filter set:
+
+Example Set 1:
+26165152, 26165153
+26165154, 26165155
+
+Then click 'Add Set' and repeat for more sets..."></textarea>
+            
+            <div style="margin-top: 20px;">
+                <button onclick="addBlock()" class="btn btn-warning">
+                    <i class="fas fa-plus"></i> Add Filter Set
+                </button>
+                <button onclick="runMulti()" class="btn btn-success" id="multiBtn">
+                    <i class="fas fa-rocket"></i> Create Multi-Sheet Excel
+                </button>
+                <button onclick="clearAllBlocks()" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Clear All Sets
+                </button>
+            </div>
+            
+            <div id="blockListContainer">
+                <h4 style="margin: 20px 0 10px 0; color: #333;">
+                    <i class="fas fa-list"></i> Filter Sets Added:
+                </h4>
+                <ul id="blockList" class="block-list"></ul>
+            </div>
+            
+            <div class="loading" id="multiLoading">
+                <div class="spinner"></div>
+                Creating multi-sheet Excel...
+            </div>
+            <div id="multiResult" class="result"></div>
+        </div>
+        
+        <!-- Complete Processing -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon process-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div>
+                    <h3 class="card-title">Complete Processing with Statistics</h3>
+                    <p style="color: #666; font-size: 0.9rem;">Full analysis with detailed statistics and optional filtering</p>
+                </div>
+            </div>
+            
+            <textarea id="filterRolls" class="modern-textarea" placeholder="Enter roll numbers to filter (optional - leave empty for all students):"></textarea>
+            
+            <div style="margin-top: 20px;">
+                <button onclick="processFile()" class="btn">
+                    <i class="fas fa-cogs"></i> Process with Statistics
+                </button>
+            </div>
+            
+            <div class="loading" id="processLoading">
+                <div class="spinner"></div>
+                Processing file with statistics...
+            </div>
+            <div id="processResult" class="result"></div>
+        </div>
+        
+        <!-- Download History -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon history-icon">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div>
+                    <h3 class="card-title">Download History</h3>
+                    <p style="color: #666; font-size: 0.9rem;">Recent processing results and downloads</p>
+                </div>
+            </div>
+            
+            <div id="historyList">No processing history yet. Upload and process files to see history.</div>
+            
+            <div style="margin-top: 20px;">
+                <button onclick="loadHistory()" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> Refresh History
+                </button>
+                <button onclick="clearAllHistory()" class="btn btn-danger">
+            <i class="fas fa-trash-alt"></i> Clear All History
+                </button>
+            </div>
+            
+            
+            
+        </div>
+    </div>
+
+    <script>
+        let uploadedFile = null;
+        let filterBlocks = [];
+
+        // Drag and Drop Functionality
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                uploadFile();
+            }
+        });
+
+        uploadZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                uploadFile();
+            }
+        });
+
+        async function uploadFile() {
+            const resultDiv = document.getElementById('uploadResult');
+            
+            if (!fileInput.files[0]) {
+                resultDiv.innerHTML = '<div class="result error"><i class="fas fa-exclamation-circle"></i> Please select a CBSE text file</div>';
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            if (!file.name.toLowerCase().endsWith('.txt')) {
+                resultDiv.innerHTML = '<div class="result error"><i class="fas fa-exclamation-circle"></i> Only CBSE text files (.txt) are supported</div>';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Uploading and parsing CBSE file...</div>';
+                
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    uploadedFile = data.filename;
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <i class="fas fa-check-circle"></i> CBSE file uploaded and parsed successfully!<br>
+                            📊 Found <strong>${data.total_students}</strong> total students<br>
+                            📝 File: <strong>${data.filename}</strong>
+                        </div>
+                    `;
+                    enableFilteringSections();
+                } else {
+                    resultDiv.innerHTML = `<div class="result error"><i class="fas fa-exclamation-circle"></i> Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error"><i class="fas fa-exclamation-circle"></i> Upload failed: ${error.message}</div>`;
+            }
+        }
+
+        function enableFilteringSections() {
+            const buttons = ['filterBtn', 'multiBtn'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('disabled');
+            });
+        }
+
+        async function filterDynamic() {
+            const rollsText = document.getElementById('dynamicRolls').value;
+            const resultDiv = document.getElementById('filterResult');
+            const loadingDiv = document.getElementById('filterLoading');
+            const filterBtn = document.getElementById('filterBtn');
+            
+            if (!uploadedFile) {
+                resultDiv.innerHTML = '<div class="result error"><i class="fas fa-exclamation-circle"></i> Please upload a CBSE file first</div>';
+                return;
+            }
+            
+            if (!rollsText.trim()) {
+                resultDiv.innerHTML = '<div class="result error"><i class="fas fa-exclamation-circle"></i> Please enter at least one roll number</div>';
+                return;
+            }
+            
+            try {
+                loadingDiv.style.display = 'block';
+                filterBtn.disabled = true;
+                resultDiv.innerHTML = '';
+                
+                const response = await fetch('/filter_dynamic', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ roll_numbers: rollsText })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <i class="fas fa-check-circle"></i> ${data.message}<br>
+                            📊 Filtered Count: <strong>${data.filtered_count}</strong> students
+                            <a href="${data.download_url}" class="download-link">
+                                <i class="fas fa-download"></i> Download Excel File
+                            </a>
+                        </div>
+                    `;
+                    loadHistory();
+                } else {
+                    resultDiv.innerHTML = `<div class="result error"><i class="fas fa-exclamation-circle"></i> ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error"><i class="fas fa-exclamation-circle"></i> Filter failed: ${error.message}</div>`;
+            } finally {
+                loadingDiv.style.display = 'none';
+                filterBtn.disabled = false;
+            }
+        }
+
+        function clearDynamicFilter() {
+            document.getElementById('dynamicRolls').value = '';
+            document.getElementById('filterResult').innerHTML = '';
+        }
+
+        function addBlock() {
+            const txtArea = document.getElementById('rollBlock');
+            const blockText = txtArea.value.trim();
+            
+            if (!blockText) {
+                alert('⚠️ Please enter roll numbers for this filter set');
+                return;
+            }
+            
+            filterBlocks.push(blockText);
+            updateBlockList();
+            txtArea.value = '';
+        }
+
+        function updateBlockList() {
+            const listEl = document.getElementById('blockList');
+            listEl.innerHTML = '';
+            
+            if (filterBlocks.length === 0) {
+                listEl.innerHTML = '<li style="color: #999; font-style: italic; padding: 20px;">No filter sets added yet</li>';
+                return;
+            }
+            
+            filterBlocks.forEach((block, index) => {
+                const li = document.createElement('li');
+                li.className = 'block-item';
+                li.innerHTML = `
+                    <div class="block-text">
+                        <strong>Set ${index + 1}:</strong> ${block.substring(0, 80)}${block.length > 80 ? '...' : ''}
+                    </div>
+                    <button class="remove-btn" onclick="removeBlock(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                listEl.appendChild(li);
+            });
+        }
+
+        function removeBlock(index) {
+            filterBlocks.splice(index, 1);
+            updateBlockList();
+        }
+
+        function clearAllBlocks() {
+            if (filterBlocks.length > 0 && confirm('🗑️ Are you sure you want to clear all filter sets?')) {
+                filterBlocks = [];
+                updateBlockList();
+                document.getElementById('multiResult').innerHTML = '';
+            }
+        }
+
+        async function runMulti() {
+            const resultDiv = document.getElementById('multiResult');
+            const loadingDiv = document.getElementById('multiLoading');
+            const multiBtn = document.getElementById('multiBtn');
+            
+            if (!uploadedFile) {
+                resultDiv.innerHTML = '<div class="result error"><i class="fas fa-exclamation-circle"></i> Please upload a CBSE file first</div>';
+                return;
+            }
+            
+            if (filterBlocks.length === 0) {
+                resultDiv.innerHTML = '<div class="result error"><i class="fas fa-exclamation-circle"></i> Please add at least one filter set</div>';
+                return;
+            }
+            
+            try {
+                loadingDiv.style.display = 'block';
+                multiBtn.disabled = true;
+                resultDiv.innerHTML = '';
+                
+                const response = await fetch('/filter_multi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sets: filterBlocks })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <i class="fas fa-check-circle"></i> ${data.message}<br>
+                            📊 Created <strong>${data.sheets_created}</strong> filter sheets<br>
+                            👥 Total filtered students: <strong>${data.total_filtered}</strong>
+                            <a href="${data.download_url}" class="download-link">
+                                <i class="fas fa-download"></i> Download Multi-Sheet Excel
+                            </a>
+                        </div>
+                    `;
+                    
+                    filterBlocks = [];
+                    updateBlockList();
+                    loadHistory();
+                } else {
+                    resultDiv.innerHTML = `<div class="result error"><i class="fas fa-exclamation-circle"></i> ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error"><i class="fas fa-exclamation-circle"></i> Multi-filter failed: ${error.message}</div>`;
+            } finally {
+                loadingDiv.style.display = 'none';
+                multiBtn.disabled = false;
+            }
+        }
+
+        async function processFile() {
+            const rollsText = document.getElementById('filterRolls').value;
+            const resultDiv = document.getElementById('processResult');
+            const loadingDiv = document.getElementById('processLoading');
+            
+            if (!uploadedFile) {
+                resultDiv.innerHTML = '<div class="result error"><i class="fas fa-exclamation-circle"></i> Please upload a CBSE file first</div>';
+                return;
+            }
+            
+            try {
+                loadingDiv.style.display = 'block';
+                resultDiv.innerHTML = '';
+                
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filter_roll_numbers: rollsText })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const statsHtml = generateStatsHtml(data.stats);
+                    
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <i class="fas fa-check-circle"></i> ${data.message}<br>
+                            ${statsHtml}
+                            <a href="/download/${data.process_id}" class="download-link">
+                                <i class="fas fa-download"></i> Download Complete Excel
+                            </a>
+                        </div>
+                    `;
+                    
+                    loadHistory();
+                } else {
+                    resultDiv.innerHTML = `<div class="result error"><i class="fas fa-exclamation-circle"></i> ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error"><i class="fas fa-exclamation-circle"></i> Processing failed: ${error.message}</div>`;
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        function generateStatsHtml(stats) {
+            let html = '<div class="stats-grid">';
+            for (const [key, value] of Object.entries(stats)) {
+                html += `
+                    <div class="stat-item">
+                        <div class="stat-number">${value}</div>
+                        <div class="stat-label">${key}</div>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            return html;
+        }
+
+        async function loadHistory() {
+    try {
+        const response = await fetch('/history');
+        const data = await response.json();
+        
+        const historyDiv = document.getElementById('historyList');
+        
+        if (Object.keys(data).length === 0) {
+            historyDiv.innerHTML = '<p style="color: #999; font-style: italic; padding: 20px;">No processing history yet.</p>';
+            return;
+        }
+        
+        let historyHtml = '';
+        for (const [processId, info] of Object.entries(data)) {
+            const timestamp = new Date(info.timestamp).toLocaleString();
+            let type = '<i class="fas fa-chart-bar"></i> Full Process';
+            let details = '';
+            
+            if (info.type === 'dynamic_filter') {
+                type = '<i class="fas fa-filter"></i> Dynamic Filter';
+                details = `👥 ${info.filtered_count} students`;
+            } else if (info.type === 'multi_filter') {
+                type = '<i class="fas fa-layer-group"></i> Multi-Filter';
+                details = `📄 ${info.sheets_created} sheets, 👥 ${info.total_filtered} students`;
+            } else {
+                details = `👥 ${info.filtered_count} filtered students`;
+            }
+            
+            historyHtml += `
+                <div class="history-item">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex-grow: 1;">
+                            <strong>${type}</strong> - ${info.original_filename}<br>
+                            <small style="color: #666;">
+                                <i class="fas fa-clock"></i> ${timestamp} | ${details}
+                            </small>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <a href="/download/${processId}" class="download-link">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            <button onclick="deleteHistoryItem('${processId}')" 
+                                    class="btn btn-danger" 
+                                    style="padding: 8px 12px; font-size: 0.8rem;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        historyDiv.innerHTML = historyHtml;
+    } catch (error) {
+        console.error('Failed to load history:', error);
+    }
+}
+
+        
+        async function deleteUploadedFile() {
+            if (!uploadedFile) {
+                alert('❌ No file uploaded to delete');
+                return;
+            }
+
+            if (!confirm('🗑️ Are you sure you want to delete the uploaded file? This will clear all current work.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/delete_upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Clear UI
+                    uploadedFile = null;
+                    document.getElementById('uploadResult').innerHTML = `
+                        <div class="result success">
+                            <i class="fas fa-check-circle"></i> ${data.message}
+                        </div>
+                    `;
+
+                    // Clear all form data
+                    document.getElementById('fileInput').value = '';
+                    document.getElementById('dynamicRolls').value = '';
+                    document.getElementById('rollBlock').value = '';
+                    document.getElementById('filterRolls').value = '';
+
+                    // Clear all results
+                    document.getElementById('filterResult').innerHTML = '';
+                    document.getElementById('multiResult').innerHTML = '';
+                    document.getElementById('processResult').innerHTML = '';
+
+                    // Clear filter blocks
+                    filterBlocks = [];
+                    updateBlockList();
+
+                    // Disable filtering buttons
+                    const buttons = ['filterBtn', 'multiBtn'];
+                    buttons.forEach(id => {
+                        const btn = document.getElementById(id);
+                        if (btn) btn.classList.add('disabled');
+                    });
+
+                    // Reload history to reflect changes
+                    loadHistory();
+                } else {
+                    alert(`❌ Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert(`❌ Delete failed: ${error.message}`);
+            }
+        }
+
+        async function clearAllHistory() {
+            if (!confirm('🗑️ Are you sure you want to delete ALL download history and files? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/clear_history', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('historyList').innerHTML = `
+                        <div class="result success" style="margin: 20px 0;">
+                            <i class="fas fa-check-circle"></i> ${data.message}
+                        </div>
+                    `;
+                    setTimeout(loadHistory, 2000); // Refresh after showing success message
+                } else {
+                    alert(`❌ Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert(`❌ Clear history failed: ${error.message}`);
+            }
+        }
+
+        async function deleteHistoryItem(processId) {
+            if (!confirm('🗑️ Delete this item from history? The associated file will also be deleted.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/delete_history_item/${processId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    loadHistory(); // Refresh history list
+                } else {
+                    alert(`❌ Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert(`❌ Delete failed: ${error.message}`);
+            }
+        }
+
+        
+        
+        
+
+        // Initialize page
+        window.addEventListener('load', () => {
+            loadHistory();
+            updateBlockList();
+            
+            const buttons = ['filterBtn', 'multiBtn'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.add('disabled');
+            });
+        });
+    </script>
+</body>
+</html>
